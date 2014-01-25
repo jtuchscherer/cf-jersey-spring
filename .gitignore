@@ -1,0 +1,14 @@
+.hg
+.hgignore
+*/target/**
+target/
+.project
+*/.project
+*/.classpath
+.metadata/*
+*.swp
+*.orig
+*.rej
+*.ids
+out/*
+.idea/workspace.xml
