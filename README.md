@@ -1,6 +1,9 @@
 Java Spring Web App Starter Project
 =============================
 
+[![Build Status](https://travis-ci.org/jtuchscherer/java-starter.png)](https://travis-ci.org/jtuchscherer/java-starter)
+
+
 Instructions
 ------------
 
