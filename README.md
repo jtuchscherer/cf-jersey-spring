@@ -21,7 +21,7 @@ You can run it with
 
 Then you can test the api by going to
 
-    http://localhost:8080/java-refactoring-test/rest/users
+    http://localhost:8080/rest/users
 
 Notes
 ------------
