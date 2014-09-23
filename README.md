@@ -29,7 +29,7 @@ Notes
 ------------
 
 * Uses Jersey 2.12 for REST server
-* Spring 3.2.6.RELEASE (web.xml got replaced by WebAppInitializer)
+* Spring 3.2.11.RELEASE (web.xml got replaced by WebAppInitializer)
 * This app uses an embedded HSQL database to store the users and Hibernate as an ORM
 * Logging is provided by logback
 * There are end-to-end integration tests that start an embedded tomcat server and use HttpClient to query the API
