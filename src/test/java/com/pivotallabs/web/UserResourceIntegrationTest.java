@@ -1,5 +1,8 @@
 package com.pivotallabs.web;
 
+import com.google.gson.Gson;
+import com.pivotallabs.orm.Role;
+import com.pivotallabs.orm.User;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -10,6 +13,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.testng.annotations.BeforeMethod;
@@ -17,13 +21,14 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class UserResourceIntegrationTest {
 
-    private static final String USERS_ENDPOINT = "http://localhost:8888/java-starter/rest/users";
+    private static final String USERS_ENDPOINT = "http://localhost:8888/rest/users";
     private HttpClient httpClient;
 
     @BeforeMethod
@@ -33,35 +38,56 @@ public class UserResourceIntegrationTest {
 
     @Test
     public void createAUser() throws IOException {
-        HttpPost httppost = new HttpPost(USERS_ENDPOINT);
+        HttpPost httpPost = new HttpPost(USERS_ENDPOINT + "/withFormValues");
 
         ArrayList<NameValuePair> postParameters = new ArrayList<>();
         postParameters.add(new BasicNameValuePair("name", "adam"));
         postParameters.add(new BasicNameValuePair("email", "adam@admin.com"));
         postParameters.add(new BasicNameValuePair("role", "<role><name>admin</name></role>"));
 
-        httppost.setEntity(new UrlEncodedFormEntity(postParameters));
+        httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
 
-        HttpResponse response = httpClient.execute(httppost);
+        HttpResponse response = httpClient.execute(httpPost);
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
+        assertThat(IOUtils.toString(response.getEntity().getContent())).contains("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><email>adam@admin.com</email><name>adam</name><roles><name>admin</name></roles></user>");
     }
 
     @Test(dependsOnMethods = "createAUser")
-    public void createAnotherUserWithTheSameRole() throws IOException {
-        HttpPost httppost = new HttpPost(USERS_ENDPOINT);
+    public void createAUserWithJSON() throws IOException {
+        Gson gson= new Gson();
+        User user = new User();
+        user.setName("tom");
+        user.setEmail("tom@admin.com");
+        Role role = new Role();
+        role.setName("admin");
+        user.setRoles(Arrays.asList(role));
 
-        ArrayList<NameValuePair> postParameters = new ArrayList<>();
-        postParameters.add(new BasicNameValuePair("name", "tom"));
-        postParameters.add(new BasicNameValuePair("email", "tom@admin.com"));
-        postParameters.add(new BasicNameValuePair("role", "<role><name>admin</name></role>"));
+        HttpPost httpPost = new HttpPost(USERS_ENDPOINT);
+        StringEntity params = new StringEntity(gson.toJson(user));
 
-        httppost.setEntity(new UrlEncodedFormEntity(postParameters));
+        httpPost.addHeader("content-type", "application/json");
+        httpPost.addHeader("Accept", "application/json");
+        httpPost.setEntity(params);
 
-        HttpResponse response = httpClient.execute(httppost);
+        HttpResponse response = httpClient.execute(httpPost);
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
+        assertThat(IOUtils.toString(response.getEntity().getContent())).contains("{\"name\":\"tom\",\"email\":\"tom@admin.com\",\"roles\":[{\"name\":\"admin\"}]}");
     }
 
-    @Test(dependsOnMethods = "createAnotherUserWithTheSameRole")
+    @Test(dependsOnMethods = "createAUserWithJSON")
+    public void getAllUsersWithJson() throws IOException {
+        HttpGet httpGet;
+        httpGet = new HttpGet(USERS_ENDPOINT);
+        httpGet.addHeader("Accept", "application/json");
+
+        HttpResponse response = httpClient.execute(httpGet);
+
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
+        HttpEntity responseEntity = response.getEntity();
+        assertThat(IOUtils.toString(responseEntity.getContent())).contains("[{\"name\":\"adam\",\"email\":\"adam@admin.com\",\"roles\":[{\"name\":\"admin\"}]},{\"name\":\"tom\",\"email\":\"tom@admin.com\",\"roles\":[{\"name\":\"admin\"}]}]");
+    }
+
+    @Test(dependsOnMethods = "createAUserWithJSON")
     public void getAllUsers() throws IOException {
         HttpGet httpGet;
         httpGet = new HttpGet(USERS_ENDPOINT);

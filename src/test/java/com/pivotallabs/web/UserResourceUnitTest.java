@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -34,8 +35,8 @@ public class UserResourceUnitTest {
         when(userDao.getAll()).thenReturn(asList(new User(), new User()));
         Response response = userResource.getUsers();
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getEntity()).isInstanceOf(GenericEntity.class);
-        List<User> users = ((GenericEntity<List<User>>) response.getEntity()).getEntity();
+        assertThat(response.getEntity()).isInstanceOf(List.class);
+        List<User> users = (List<User>) response.getEntity();
         assertThat(users).hasSize(2);
     }
 

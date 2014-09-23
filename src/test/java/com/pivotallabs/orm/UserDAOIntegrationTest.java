@@ -1,20 +1,21 @@
 package com.pivotallabs.orm;
 
-import com.sun.jersey.api.ConflictException;
-import com.sun.jersey.api.NotFoundException;
+import com.pivotallabs.web.SpringConfig;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
 import javax.annotation.Resource;
+import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
 
-@ContextConfiguration({"classpath:application-config.xml"})
+@ContextConfiguration(classes={SpringConfig.class})
 public class UserDAOIntegrationTest extends AbstractTransactionalTestNGSpringContextTests {
 
     @Resource
@@ -57,8 +58,8 @@ public class UserDAOIntegrationTest extends AbstractTransactionalTestNGSpringCon
         try {
             userDao.create(adam);
             fail();
-        } catch (ConflictException exception) {
-            assertThat(exception.getResponse().getEntity()).isEqualTo("User with name adam0 already exists");
+        } catch (NotAcceptableException exception) {
+            assertThat(exception.getMessage()).isEqualTo("User with name adam0 already exists");
         }
     }
 
@@ -121,7 +122,7 @@ public class UserDAOIntegrationTest extends AbstractTransactionalTestNGSpringCon
             userDao.updateUser(userToUpdate);
             fail();
         } catch (NotFoundException exception) {
-            assertThat(exception.getResponse().getEntity()).isEqualTo("User with name Does Not Exist is not found");
+            assertThat(exception.getMessage()).isEqualTo("User with name Does Not Exist is not found");
         }
     }
 
@@ -147,7 +148,7 @@ public class UserDAOIntegrationTest extends AbstractTransactionalTestNGSpringCon
             userDao.deleteUser(userToDelete);
             fail();
         } catch (NotFoundException exception) {
-            assertThat(exception.getResponse().getEntity()).isEqualTo("User with name Does Not Exist is not found");
+            assertThat(exception.getMessage()).isEqualTo("User with name Does Not Exist is not found");
         }
     }
 

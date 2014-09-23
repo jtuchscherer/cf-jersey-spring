@@ -9,24 +9,26 @@ Instructions
 
 Build this project with
 
-    mvn package
+    mvn clean package
 
 Run integration tests with
 
-    mvn integration-test
+    mvn clean verify
 
 You can run it with
 
-    mvn tomcat7:run
+    mvn clean tomcat7:run
 
-Then you can test the api by going to
+Then you can test the api with curl like this
 
-    http://localhost:8080/rest/users
+    curl -i -H "Accept: application/json" -H "Content-Type: application/json" -XPOST localhost:8080/rest/users -d '{"name": "tom", "email": "test@admin.com", "roles": [{"name": "dev"}]}'
+
+    curl -i -H "Accept: application/json" localhost:8080/rest/users
 
 Notes
 ------------
 
-* Uses Jersey for REST server
+* Uses Jersey 2.12 for REST server
 * Spring 3.2.6.RELEASE (web.xml got replaced by WebAppInitializer)
 * This app uses an embedded HSQL database to store the users and Hibernate as an ORM
 * Logging is provided by logback

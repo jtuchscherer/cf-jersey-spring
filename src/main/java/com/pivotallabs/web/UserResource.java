@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import javax.annotation.Resource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -19,6 +20,9 @@ public class UserResource {
     public UserDao userDao;
 
     @POST
+    @Path("withFormValues")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public Response addUser(@FormParam("name") String name,
                             @FormParam("email") String email,
                             @FormParam("role") List<Role> roles) {
@@ -27,6 +31,16 @@ public class UserResource {
         user.setName(name);
         user.setEmail(email);
         user.setRoles(roles);
+
+        userDao.create(user);
+        return Response.ok().entity(user).build();
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response addUser(User user) {
+
 
         userDao.create(user);
         return Response.ok().entity(user).build();
@@ -57,10 +71,10 @@ public class UserResource {
     }
 
     @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getUsers() {
         List<User> users = userDao.getAll();
-        GenericEntity<List<User>> listEntity = new GenericEntity<List<User>>(users) {
-        };
+        GenericEntity<List<User>> listEntity = new GenericEntity<List<User>>(users) {};
         return Response.ok().entity(listEntity).build();
     }
 

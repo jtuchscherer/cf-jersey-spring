@@ -1,13 +1,13 @@
 package com.pivotallabs.orm;
 
-import com.sun.jersey.api.ConflictException;
-import com.sun.jersey.api.NotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.NotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +67,8 @@ public class UserDao {
         return ((Number) getCurrentSession().createCriteria(User.class).add(eq("name", username)).setProjection(rowCount()).uniqueResult()).intValue();
     }
 
-    private boolean isUserRoleInvalid(User userToUpdate) {
-        return userToUpdate.getRoles().isEmpty() || userToUpdate.getRoles().contains(null);
+    private boolean isUserRoleInvalid(User user) {
+        return user.getRoles().isEmpty() || user.getRoles().contains(null);
     }
 
     private void handleInvalidUserRole(User userToUpdate) {
@@ -78,7 +78,7 @@ public class UserDao {
     }
 
     private void handleUserAlreadyExistsError(User user) {
-        throw new ConflictException(format("User with name %s already exists", user.getName()));
+        throw new NotAcceptableException(format("User with name %s already exists", user.getName()));
     }
 
     private Session getCurrentSession() {
