@@ -15,6 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.2.11.RELEASE</spring.version>
         <jersey.version>2.12</jersey.version>
+        <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
@@ -229,8 +230,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -261,7 +262,57 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.cloudfoundry</groupId>
+                <artifactId>cf-maven-plugin</artifactId>
+                <version>1.0.4</version>
+                <configuration>
+                    <memory>512</memory>
+                    <buildpack>https://github.com/cloudfoundry/java-buildpack.git</buildpack>
+                    <appname>java-starter</appname>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>bosh-lite</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.cloudfoundry</groupId>
+                        <artifactId>cf-maven-plugin</artifactId>
+                        <version>1.0.4</version>
+                        <configuration>
+                            <server>bosh-lite</server>
+                            <target>http://api.10.244.0.34.xip.io</target>
+                            <org>java</org>
+                            <space>dev</space>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>PWS</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.cloudfoundry</groupId>
+                        <artifactId>cf-maven-plugin</artifactId>
+                        <version>1.0.4</version>
+                        <configuration>
+                            <server>pws</server>
+                            <target>https://api.run.pivotal.io</target>
+                            <org>johannes-org</org>
+                            <space>development</space>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
