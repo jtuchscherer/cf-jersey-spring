@@ -24,6 +24,37 @@ Then you can test the api with curl like this
     curl -i -H "Accept: application/json" -H "Content-Type: application/json" -XPOST localhost:8080/rest/users -d '{"name": "tom", "email": "test@admin.com", "roles": [{"name": "dev"}]}'
 
     curl -i -H "Accept: application/json" localhost:8080/rest/users
+    
+You can push it to CloudFoundry with the following commands
+
+For bosh-lite
+
+    mvn clean cf:push -Pbosh-lite (this assumes you have a local bosh-lite install with an org 'Java' and a space 'dev')
+
+For PWS
+    
+    mvn clean cf:push -PPWS (you will need to modify the org and space in the pom.xml)
+    
+In order to get these two commands to work, you will need this in your ~/.m2/settings.xml
+
+````
+<settings>
+  [...]
+  <servers>
+    [...]
+    <server>
+      <id>bosh-lite</id>
+      <username>admin</username>
+      <password>admin</password>
+    </server>
+    <server>
+      <id>pws</id>
+      <username>PWS_USERNAME</username>
+      <password>PWS_PASSWORD</password>
+    </server>
+  </servers>
+</settings>
+````
 
 Notes
 ------------
