@@ -1,7 +1,7 @@
 Java Spring Web App Starter Project
 =============================
 
-[![Build Status](https://travis-ci.org/jtuchscherer/java-starter.png)](https://travis-ci.org/jtuchscherer/java-starter)
+[![Build Status](https://travis-ci.org/jtuchscherer/cf-jersey-spring.svg?branch=master)](https://travis-ci.org/jtuchscherer/cf-jersey-spring)
 
 
 Instructions
