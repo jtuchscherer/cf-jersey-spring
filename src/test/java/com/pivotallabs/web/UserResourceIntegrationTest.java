@@ -9,6 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.fluent.Request;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -38,16 +39,14 @@ public class UserResourceIntegrationTest {
 
     @Test
     public void createAUser() throws IOException {
-        HttpPost httpPost = new HttpPost(USERS_ENDPOINT + "/withFormValues");
-
         ArrayList<NameValuePair> postParameters = new ArrayList<>();
         postParameters.add(new BasicNameValuePair("name", "adam"));
         postParameters.add(new BasicNameValuePair("email", "adam@admin.com"));
         postParameters.add(new BasicNameValuePair("role", "<role><name>admin</name></role>"));
 
-        httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
-
-        HttpResponse response = httpClient.execute(httpPost);
+        HttpResponse response = Request.Post(USERS_ENDPOINT + "/withFormValues")
+            .bodyForm(postParameters)
+            .execute().returnResponse();
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
         assertThat(IOUtils.toString(response.getEntity().getContent())).contains("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><email>adam@admin.com</email><name>adam</name><roles><name>admin</name></roles></user>");
     }

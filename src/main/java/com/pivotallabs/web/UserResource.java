@@ -3,6 +3,10 @@ package com.pivotallabs.web;
 import com.pivotallabs.orm.Role;
 import com.pivotallabs.orm.User;
 import com.pivotallabs.orm.UserDao;
+import com.rabbitmq.client.ConnectionFactory;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -15,6 +19,9 @@ import java.util.List;
 @Path("/users")
 @Controller
 public class UserResource {
+
+    @Autowired
+    public RabbitTemplate rabbitTemplate;
 
     @Resource
     public UserDao userDao;
@@ -33,6 +40,7 @@ public class UserResource {
         user.setRoles(roles);
 
         userDao.create(user);
+        rabbitTemplate.convertAndSend("routingKey", "test");
         return Response.ok().entity(user).build();
     }
 

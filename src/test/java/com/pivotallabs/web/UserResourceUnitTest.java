@@ -4,6 +4,7 @@ import com.pivotallabs.orm.Role;
 import com.pivotallabs.orm.User;
 import com.pivotallabs.orm.UserDao;
 import org.mockito.ArgumentCaptor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -21,12 +22,16 @@ public class UserResourceUnitTest {
 
     UserResource userResource;
     UserDao userDao;
+    RabbitTemplate rabbitTemplate;
 
     @BeforeMethod
     public void setup() {
         userDao = mock(UserDao.class);
+        rabbitTemplate = mock(RabbitTemplate.class);
+
         userResource = new UserResource();
         ReflectionTestUtils.setField(userResource, "userDao", userDao);
+        ReflectionTestUtils.setField(userResource, "rabbitTemplate", rabbitTemplate);
     }
 
     @Test
