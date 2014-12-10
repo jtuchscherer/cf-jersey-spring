@@ -17,7 +17,7 @@
         <spring.cloud.version>1.0.0.RELEASE</spring.cloud.version>
         <jersey.version>2.12</jersey.version>
         <java.version>1.8</java.version>
-        <boot2docker.host>192.168.59.103</boot2docker.host>
+        <rabbit.host>localhost</rabbit.host>
     </properties>
 
     <dependencies>
@@ -280,7 +280,7 @@
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <systemProperties>
-                                <rabbitHost>${boot2docker.host}</rabbitHost>
+                                <rabbitHost>${rabbit.host}</rabbitHost>
                             </systemProperties>
                             <port>8888</port>
                             <fork>true</fork>
@@ -328,7 +328,7 @@
                                     <name>starteramqp</name>
                                     <label>user-provided</label>
                                     <userProvidedCredentials>
-                                        <url>amqp://guest:guest@${boot2docker.host}/</url>
+                                        <url>amqp://guest:guest@${rabbit.host}/</url>
                                         <accessKey>abc123</accessKey>
                                     </userProvidedCredentials>
                                 </service>
@@ -369,6 +369,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <rabbit.host>192.168.59.103</rabbit.host>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -386,7 +389,7 @@
                                             <port>15672:15672</port>
                                         </ports>
                                         <wait>
-                                            <url>http://${boot2docker.host}:15672/</url>
+                                            <url>http://${rabbit.host}:15672/</url>
                                             <time>10000</time>
                                         </wait>
                                     </run>
