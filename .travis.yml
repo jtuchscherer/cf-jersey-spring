@@ -1,4 +1,6 @@
 language: java
+services:
+  - rabbitmq
 jdk:
   - oraclejdk8
-script: mvn verify
+script: mvn verify -P -docker-rabbit

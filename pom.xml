@@ -305,46 +305,6 @@
                     <appname>java-starter</appname>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.jolokia</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.10.5</version>
-
-                <configuration>
-                    <images>
-                        <image>
-                            <name>dockerfile/rabbitmq</name>
-                            <run>
-                                <ports>
-                                    <port>5672:5672</port>
-                                    <port>15672:15672</port>
-                                </ports>
-                                <wait>
-                                    <url>http://${boot2docker.host}:15672/</url>
-                                    <time>10000</time>
-                                </wait>
-                            </run>
-                        </image>
-                    </images>
-                    <autoPull>true</autoPull>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -400,6 +360,56 @@
                                 </service>
                             </services>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker-rabbit</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jolokia</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.10.5</version>
+
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>dockerfile/rabbitmq</name>
+                                    <run>
+                                        <ports>
+                                            <port>5672:5672</port>
+                                            <port>15672:15672</port>
+                                        </ports>
+                                        <wait>
+                                            <url>http://${boot2docker.host}:15672/</url>
+                                            <time>10000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                            <autoPull>true</autoPull>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
