@@ -85,6 +85,14 @@ public class UserResourceUnitTest {
     }
 
     @Test
+    public void addUser_sendsMessage() {
+        Role adminRole = new Role();
+        adminRole.setName("admin");
+        userResource.addUser("adam", "adam@email.com", asList(adminRole));
+        verify(rabbitTemplate).convertAndSend("myqueue", "test");
+    }
+
+    @Test
     public void addUser_ReturnsA200WithTheUserAsPayload() {
         Response response = userResource.addUser("adam", "adam@email.com", asList(new Role()));
         assertThat(response.getStatus()).isEqualTo(200);

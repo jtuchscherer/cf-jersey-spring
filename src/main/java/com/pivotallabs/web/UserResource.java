@@ -40,7 +40,7 @@ public class UserResource {
         user.setRoles(roles);
 
         userDao.create(user);
-        rabbitTemplate.convertAndSend("routingKey", "test");
+        rabbitTemplate.convertAndSend("myqueue", "test");
         return Response.ok().entity(user).build();
     }
 

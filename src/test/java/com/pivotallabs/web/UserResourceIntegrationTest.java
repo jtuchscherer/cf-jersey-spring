@@ -17,6 +17,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.common.LiteralExpression;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -27,10 +34,14 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class UserResourceIntegrationTest {
+@ContextConfiguration(classes = {OfflineConfig.class})
+public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTests {
 
     private static final String USERS_ENDPOINT = "http://localhost:8888/rest/users";
     private HttpClient httpClient;
+
+    @Autowired
+    private RabbitTemplate template;
 
     @BeforeMethod
     public void closeConnection() {
@@ -38,7 +49,7 @@ public class UserResourceIntegrationTest {
     }
 
     @Test
-    public void createAUser() throws IOException {
+    public void createAUser() throws IOException, InterruptedException {
         ArrayList<NameValuePair> postParameters = new ArrayList<>();
         postParameters.add(new BasicNameValuePair("name", "adam"));
         postParameters.add(new BasicNameValuePair("email", "adam@admin.com"));
@@ -49,6 +60,9 @@ public class UserResourceIntegrationTest {
             .execute().returnResponse();
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
         assertThat(IOUtils.toString(response.getEntity().getContent())).contains("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><email>adam@admin.com</email><name>adam</name><roles><name>admin</name></roles></user>");
+
+        String message = (String) template.receiveAndConvert("myqueue");
+        assertThat(message).isEqualTo("test");
     }
 
     @Test(dependsOnMethods = "createAUser")
