@@ -3,5 +3,5 @@ services:
   - rabbitmq
 jdk:
   - oraclejdk8
-install: mvn install -DskipTests=true -P -docker-rabbit
-script: mvn verify -P -docker-rabbit
+install: mvn install -DskipTests=true -P travis
+script: mvn verify -P travis
