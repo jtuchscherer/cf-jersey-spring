@@ -1,9 +1,8 @@
-package com.pivotallabs.web;
+package com.pivotallabs.config;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -15,9 +14,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"com.pivotallabs.orm", "com.pivotallabs.web"})
 @EnableTransactionManagement
-public class SpringConfig {
+public class ORMConfig {
 
     @Bean(destroyMethod = "shutdown")
     public EmbeddedDatabase dataSource() {

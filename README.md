@@ -17,7 +17,7 @@ Run integration tests with
 
 You can run it with
 
-    mvn clean tomcat7:run
+    mvn clean docker:start tomcat7:run
 
 Then you can test the api with curl like this
 

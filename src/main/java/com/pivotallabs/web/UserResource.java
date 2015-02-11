@@ -3,8 +3,6 @@ package com.pivotallabs.web;
 import com.pivotallabs.orm.Role;
 import com.pivotallabs.orm.User;
 import com.pivotallabs.orm.UserDao;
-import com.rabbitmq.client.ConnectionFactory;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static com.pivotallabs.web.OfflineConfig.QUEUE_NAME;
+import static com.pivotallabs.config.RabbitConfig.QUEUE_NAME;
 
 @Path("/users")
 @Controller
@@ -86,7 +84,8 @@ public class UserResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getUsers() {
         List<User> users = userDao.getAll();
-        GenericEntity<List<User>> listEntity = new GenericEntity<List<User>>(users) {};
+        GenericEntity<List<User>> listEntity = new GenericEntity<List<User>>(users) {
+        };
         return Response.ok().entity(listEntity).build();
     }
 

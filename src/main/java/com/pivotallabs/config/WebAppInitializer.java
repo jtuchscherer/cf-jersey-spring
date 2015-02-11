@@ -1,5 +1,6 @@
-package com.pivotallabs.web;
+package com.pivotallabs.config;
 
+import com.pivotallabs.web.UserApplication;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

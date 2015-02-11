@@ -1,6 +1,7 @@
 package com.pivotallabs.orm;
 
-import com.pivotallabs.web.SpringConfig;
+import com.pivotallabs.config.ORMConfig;
+import com.pivotallabs.config.SpringConfig;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
@@ -15,11 +16,12 @@ import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
 
-@ContextConfiguration(classes={SpringConfig.class})
+@ContextConfiguration(classes={SpringConfig.class, ORMConfig.class})
 public class UserDAOIntegrationTest extends AbstractTransactionalTestNGSpringContextTests {
 
     @Resource
     private UserDao userDao;
+
     private Role adminRole = new Role();
 
     @Test

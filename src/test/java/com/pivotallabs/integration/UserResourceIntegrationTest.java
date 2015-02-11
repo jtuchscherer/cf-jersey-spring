@@ -1,6 +1,8 @@
-package com.pivotallabs.web;
+package com.pivotallabs.integration;
 
 import com.google.gson.Gson;
+import com.pivotallabs.config.OfflineConfig;
+import com.pivotallabs.config.RabbitConfig;
 import com.pivotallabs.orm.Role;
 import com.pivotallabs.orm.User;
 import org.apache.commons.io.IOUtils;
@@ -17,26 +19,22 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.common.LiteralExpression;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static com.pivotallabs.web.OfflineConfig.QUEUE_NAME;
+import static com.pivotallabs.config.RabbitConfig.QUEUE_NAME;
 import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 
-@ContextConfiguration(classes = {OfflineConfig.class})
+@ContextConfiguration(classes = {OfflineConfig.class, RabbitConfig.class})
 public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTests {
 
     private static final String USERS_ENDPOINT = "http://localhost:8888/rest/users";
@@ -61,8 +59,8 @@ public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTest
                 new BasicNameValuePair("role", "<role><name>admin</name></role>"));
 
         HttpResponse response = Request.Post(USERS_ENDPOINT + "/withFormValues")
-            .bodyForm(postParameters)
-            .execute().returnResponse();
+                .bodyForm(postParameters)
+                .execute().returnResponse();
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
         assertThat(IOUtils.toString(response.getEntity().getContent())).contains("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><email>adam@admin.com</email><name>adam</name><roles><name>admin</name></roles></user>");
 
@@ -73,7 +71,7 @@ public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTest
 
     @Test(dependsOnMethods = "createAUser")
     public void createAUserWithJSON() throws IOException {
-        Gson gson= new Gson();
+        Gson gson = new Gson();
         User user = new User();
         user.setName("tom");
         user.setEmail("tom@admin.com");
