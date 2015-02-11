@@ -24,6 +24,12 @@ Then you can test the api with curl like this
     curl -i -H "Accept: application/json" -H "Content-Type: application/json" -XPOST localhost:8080/rest/users -d '{"name": "tom", "email": "test@admin.com", "roles": [{"name": "dev"}]}'
 
     curl -i -H "Accept: application/json" localhost:8080/rest/users
+
+or in the case of running this app on PWS:
+
+    curl -i -H "Accept: application/json" -H "Content-Type: application/json" -XPOST https://java-starter.cfapps.io/rest/users -d '{"name": "tom1", "email": "test1@admin.com", "roles": [{"name": "dev"}]}'
+
+    curl -i -H "Accept: application/json" https://java-starter.cfapps.io/rest/users
     
 You can push it to CloudFoundry with the following commands
 
@@ -60,7 +66,8 @@ Notes
 ------------
 
 * Uses Jersey 2.12 for REST server
-* Spring 3.2.11.RELEASE (web.xml got replaced by WebAppInitializer)
+* Spring 4.1.4.RELEASE (web.xml got replaced by WebAppInitializer)
 * This app uses an embedded HSQL database to store the users and Hibernate as an ORM
+* It sends message to RabbitMQ
 * Logging is provided by logback
 * There are end-to-end integration tests that start an embedded tomcat server and use HttpClient to query the API
