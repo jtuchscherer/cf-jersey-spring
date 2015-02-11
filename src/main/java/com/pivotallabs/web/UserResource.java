@@ -16,6 +16,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static com.pivotallabs.web.OfflineConfig.QUEUE_NAME;
+
 @Path("/users")
 @Controller
 public class UserResource {
@@ -40,7 +42,9 @@ public class UserResource {
         user.setRoles(roles);
 
         userDao.create(user);
-        rabbitTemplate.convertAndSend("myqueue", "test");
+
+        rabbitTemplate.convertAndSend(QUEUE_NAME, user);
+
         return Response.ok().entity(user).build();
     }
 

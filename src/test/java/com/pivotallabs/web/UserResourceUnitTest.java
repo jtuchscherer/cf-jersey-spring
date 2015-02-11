@@ -89,7 +89,15 @@ public class UserResourceUnitTest {
         Role adminRole = new Role();
         adminRole.setName("admin");
         userResource.addUser("adam", "adam@email.com", asList(adminRole));
-        verify(rabbitTemplate).convertAndSend("myqueue", "test");
+
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        verify(rabbitTemplate).convertAndSend(anyString(), userArgumentCaptor.capture());
+        User user = userArgumentCaptor.getValue();
+        assertThat(user.getName()).isEqualTo("adam");
+        assertThat(user.getEmail()).isEqualTo("adam@email.com");
+        assertThat(user.getRoles()).hasSize(1);
+        Role role = user.getRoles().get(0);
+        assertThat(role.getName()).isEqualTo("admin");
     }
 
     @Test

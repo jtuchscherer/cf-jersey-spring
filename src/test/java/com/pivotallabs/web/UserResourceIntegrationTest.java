@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.pivotallabs.web.OfflineConfig.QUEUE_NAME;
+import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 
 @ContextConfiguration(classes = {OfflineConfig.class})
@@ -50,10 +52,13 @@ public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTest
 
     @Test
     public void createAUser() throws IOException, InterruptedException {
-        ArrayList<NameValuePair> postParameters = new ArrayList<>();
-        postParameters.add(new BasicNameValuePair("name", "adam"));
-        postParameters.add(new BasicNameValuePair("email", "adam@admin.com"));
-        postParameters.add(new BasicNameValuePair("role", "<role><name>admin</name></role>"));
+        String name = "adam";
+        String email = "adam@admin.com";
+
+        List<NameValuePair> postParameters = asList(
+                new BasicNameValuePair("name", name),
+                new BasicNameValuePair("email", email),
+                new BasicNameValuePair("role", "<role><name>admin</name></role>"));
 
         HttpResponse response = Request.Post(USERS_ENDPOINT + "/withFormValues")
             .bodyForm(postParameters)
@@ -61,8 +66,9 @@ public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTest
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
         assertThat(IOUtils.toString(response.getEntity().getContent())).contains("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><email>adam@admin.com</email><name>adam</name><roles><name>admin</name></roles></user>");
 
-        String message = (String) template.receiveAndConvert("myqueue");
-        assertThat(message).isEqualTo("test");
+        User user = (User) template.receiveAndConvert(QUEUE_NAME);
+        assertThat(user.getName()).isEqualTo(name);
+        assertThat(user.getEmail()).isEqualTo(email);
     }
 
     @Test(dependsOnMethods = "createAUser")
@@ -73,7 +79,7 @@ public class UserResourceIntegrationTest extends AbstractTestNGSpringContextTest
         user.setEmail("tom@admin.com");
         Role role = new Role();
         role.setName("admin");
-        user.setRoles(Arrays.asList(role));
+        user.setRoles(asList(role));
 
         HttpPost httpPost = new HttpPost(USERS_ENDPOINT);
         StringEntity params = new StringEntity(gson.toJson(user));
